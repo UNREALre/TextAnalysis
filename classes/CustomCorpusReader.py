@@ -3,6 +3,7 @@
 
 from nltk.corpus.reader.api import CorpusReader
 from nltk.corpus.reader.api import CategorizedCorpusReader
+from readability.readability import (Unparseable, Document as Paper)
 import codecs
 import os
 
@@ -71,3 +72,12 @@ class HTMLCorpusReader(CategorizedCorpusReader, CorpusReader):
         # Создаем генератор, возвращающий имена и размеры файлов
         for path in self.abspaths(fileids):
             yield path, os.path.getsize(path)
+
+    def html(self, fileids=None, categories=None):
+        """Возвращает содержимое HTML каждого документа, очищая его с помощью readability"""
+        for doc in self.docs(fileids, categories):
+            try:
+                yield Paper(doc).summary()
+            except Unparseable as e:
+                print("Невозможно распарсить HTML: {}".format(e))
+                continue
