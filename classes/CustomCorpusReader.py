@@ -1,12 +1,13 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from nltk.corpus.reader.api import CorpusReader
-from nltk.corpus.reader.api import CategorizedCorpusReader
+from nltk.corpus.reader.api import (CorpusReader, CategorizedCorpusReader)
+from nltk import sent_tokenize
 from readability.readability import (Unparseable, Document as Paper)
 import codecs
 import os
 import bs4
+import re
 
 CAT_PATTERN = r'([\w_\s]+)/.*'
 DOC_PATTERN = r'(?!\.)[\w_\s]+/[\w\s\d\-]+\.txt'
@@ -92,3 +93,10 @@ class HTMLCorpusReader(CategorizedCorpusReader, CorpusReader):
             for element in soup.find_all(TAGS):
                 yield element.text
             soup.decompose()  # освобождаем память
+
+    def sents(self, fileids=None, categories=None):
+        """Выделяет предложения из абзацев с помощью NLTK функции sent_tokenize"""
+
+        for paragraph in self.paras(fileids, categories):
+            for sentence in sent_tokenize(paragraph):
+                yield sentence

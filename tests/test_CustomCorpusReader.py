@@ -33,3 +33,11 @@ print('Выделеные параграфы документа')
 paras = html_reader.paras(['Category 1/document2.txt'])
 for current_paras in paras:
     print("__{}__".format(current_paras))
+
+print()
+print()
+
+print('Выделеные предложения из параграфов документа')
+sents = html_reader.sents(['Category 1/document2.txt'])
+for sent in sents:
+    print("_{}_".format(sent))
