@@ -29,7 +29,7 @@ for cleaned_text in cleaned_texts:
 print()
 print()
 
-print('Выделеные параграфы документа')
+print('Выделенные параграфы документа')
 paras = html_reader.paras(['Category 1/document2.txt'])
 for current_paras in paras:
     print("__{}__".format(current_paras))
@@ -37,7 +37,15 @@ for current_paras in paras:
 print()
 print()
 
-print('Выделеные предложения из параграфов документа')
+print('Выделенные предложения из параграфов документа')
 sents = html_reader.sents(['Category 1/document2.txt'])
 for sent in sents:
     print("_{}_".format(sent))
+
+print()
+print()
+
+print('Выделенные слова из предложений')
+words = html_reader.words(['Category 1/document2.txt'])
+for word in words:
+    print("~{}~".format(word))

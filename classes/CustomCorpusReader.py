@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from nltk.corpus.reader.api import (CorpusReader, CategorizedCorpusReader)
-from nltk import sent_tokenize
+from nltk import (sent_tokenize, wordpunct_tokenize)
 from readability.readability import (Unparseable, Document as Paper)
 import codecs
 import os
@@ -100,3 +100,10 @@ class HTMLCorpusReader(CategorizedCorpusReader, CorpusReader):
         for paragraph in self.paras(fileids, categories):
             for sentence in sent_tokenize(paragraph):
                 yield sentence
+
+    def words(self, fileids=None, categories=None):
+        """Выделяет слова из предложения с помощью NLTK функции wordpunct_tokenize"""
+
+        for sentence in self.sents(fileids, categories):
+            for token in wordpunct_tokenize(sentence):
+                yield token
