@@ -12,7 +12,7 @@ print('Документы, которые нужны явно указанные
 
 print()
 print()
-
+"""
 print('Тексты документов 3 и 5, возвращается генератор')
 texts = html_reader.docs(['Category 2/document3.txt', 'Category N/document5.txt'])
 for text in texts:
@@ -49,3 +49,12 @@ print('Выделенные слова из предложений')
 words = html_reader.words(['Category 1/document2.txt'])
 for word in words:
     print("~{}~".format(word))
+
+print()
+print()
+"""
+
+print('Маркировка лексем в документе кортежем (тег, токен)')
+tokens = html_reader.tokenize(['Category 1/document2.txt'])
+for token in tokens:
+    print(token)
