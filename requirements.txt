@@ -2,3 +2,4 @@ nltk
 requests
 bs4
 readability-lxml
+bs4

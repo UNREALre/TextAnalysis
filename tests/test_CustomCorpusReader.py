@@ -25,3 +25,11 @@ print('Очищенные readability тексты html документов - �
 cleaned_texts = html_reader.html(['Category 1/document2.txt'])
 for cleaned_text in cleaned_texts:
     print(cleaned_text)
+
+print()
+print()
+
+print('Выделеные параграфы документа')
+paras = html_reader.paras(['Category 1/document2.txt'])
+for current_paras in paras:
+    print("__{}__".format(current_paras))
