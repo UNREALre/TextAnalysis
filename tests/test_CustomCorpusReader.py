@@ -12,6 +12,12 @@ print('Документы, которые нужны явно указанные
 
 print()
 print()
+
+print('Текущее состояние корпуса:\n{}'.format(html_reader.describe()))
+
+print()
+print()
+
 """
 print('Тексты документов 3 и 5, возвращается генератор')
 texts = html_reader.docs(['Category 2/document3.txt', 'Category N/document5.txt'])

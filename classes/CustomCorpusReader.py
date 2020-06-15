@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from nltk.corpus.reader.api import (CorpusReader, CategorizedCorpusReader)
-from nltk import (sent_tokenize, wordpunct_tokenize, pos_tag, download)
+from nltk import (sent_tokenize, wordpunct_tokenize, pos_tag, download, FreqDist)
 download('averaged_perceptron_tagger')
 download('averaged_perceptron_tagger_ru')
 from readability.readability import (Unparseable, Document as Paper)
@@ -10,6 +10,7 @@ import codecs
 import os
 import bs4
 import re
+import time
 
 CAT_PATTERN = r'([\w_\s]+)/.*'
 DOC_PATTERN = r'(?!\.)[\w_\s]+/[\w\s\d\-]+\.txt'
@@ -72,6 +73,43 @@ class HTMLCorpusReader(CategorizedCorpusReader, CorpusReader):
         # Создаем генератор, возвращающий имена и размеры файлов
         for path in self.abspaths(fileids):
             yield path, os.path.getsize(path)
+
+    def describe(self, fileids=None, categories=None):
+        """Выполняет обход корпуса и возвращает словрь с оценками, описывающими состояние корпуса"""
+        started = time.time()
+
+        # Структуры для подсчета
+        counts = FreqDist()
+        tokens = FreqDist()
+
+        # Выполняем обход абзавцев, выделяем лексемы и подсчитываем их
+        for para in self.paras(fileids, categories):
+            counts['paras'] += 1
+
+            for sent in sent_tokenize(para):
+                counts['sents'] += 1
+
+                for word in wordpunct_tokenize(sent):
+                    counts['words'] += 1
+                    tokens[word] += 1
+
+        # Определяем число файлов и категорий в корпусе
+        n_fileids = len(self.resolve(fileids, categories) or self.fileids())
+        n_topics = len(self.categories(self.resolve(fileids, categories)))
+
+        # Возвращаем структуру данных с информацией
+        return {
+            'files': n_fileids,
+            'topics': n_topics,
+            'paras': counts['paras'],
+            'sents': counts['sents'],
+            'words': counts['words'],
+            'vocab': len(tokens),
+            'lexdiv': float(counts['words']) / float(len(tokens)),
+            'ppdoc': float(counts['paras']) / float(n_fileids),
+            'sppar': float(counts['sents']) / float(counts['paras']),
+            'secs': time.time() - started
+        }
 
     def html(self, fileids=None, categories=None):
         """Возвращает содержимое HTML каждого документа, очищая его с помощью readability."""
