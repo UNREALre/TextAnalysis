@@ -38,7 +38,7 @@ class Preprocessor(object):
     def tokenize(self, fileid):
         for paragraph in self.corpus.paras(fileids=fileid):
             yield[
-                pos_tag(wordpunct_tokenize(sent))
+                pos_tag(wordpunct_tokenize(sent), lang='rus')
                 for sent in sent_tokenize(paragraph)
             ]
 
