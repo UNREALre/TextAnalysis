@@ -13,3 +13,4 @@ List of files in order from simple to complex in terms of learning process:
 5. BagOfWords.py
 6. Estimator.py
 7. Transformer.py
+8. TextNormalizer.py
