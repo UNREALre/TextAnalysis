@@ -33,7 +33,6 @@ tfidf(t,d,D) = tf(t,d) * idf(t,D)
 С помощью TF-IDF легко отлавливать стоп-слова, т.е. ничего не значащие слова (типа предлогов и союзов),
 которые встречаются везде.
 
-Субъективно: лучше всего работает Scikit, потом NLTK, Gensim вообще не завелась.
 Лучшее кодирование: TF-IDF
 """
 
@@ -52,7 +51,7 @@ def tokenize(text):
 
     Отбрасывает знаки препинания, используя набор символов string.puctuation.
     Преобразует оставшиеся символы в нижний регистр.
-    Сворачивает свойства с помощью SnowballSteammer (по типу удаления суффиксов мн.числа в en и тд)
+    Сворачивает свойства с помощью SnowballStemmer (по типу удаления суффиксов мн.числа в en и тд)
     :param text:
     :return:
     """
@@ -161,13 +160,16 @@ def scikit_tfidf_vectorize(corpus):
 def gensim_vectorize(corpus):
     """Реализует базовую частотную векторизацию (используем Gensim)"""
 
-    corpus = [tokenize(doc) for doc in corpus]
-    # Создаем объект словаря Dictionary отображающие лексемы в индексыв порядке их следования в документе
+    tokenized_corpus = [tokenize(doc) for doc in corpus]
+    # Создаем объект словаря Dictionary отображающий лексемы в индексы в порядке их следования в документе
     # т.е. в id2word будет словарь документа корпуса - ['грил', 'для', 'жарк', 'и', 'идеальн']
-    id2word = gensim.corpora.Dictionary(corpus)
+    id2word = gensim.corpora.Dictionary(tokenized_corpus)
+
+    # повторно создаем генератор, т.е. id2word его израсходовал
+    tokenized_corpus = [tokenize(doc) for doc in corpus]
     # doc2bow - принимает лексимизированный документ и возвращает матрицу кортежей (id,count), где id -
-    # иднетификатор лексемы в словаре
-    vectors = [id2word.doc2bow(doc) for doc in corpus]
+    # идентификатор лексемы в словаре
+    vectors = [id2word.doc2bow(doc) for doc in tokenized_corpus]
 
     return vectors
 
@@ -175,12 +177,13 @@ def gensim_vectorize(corpus):
 def gensim_logical_vectorize(corpus):
     """Реализует логическую векторизацию (прямое кодирование, Gensim)"""
 
-    corpus = [tokenize(doc) for doc in corpus]
-    id2word = gensim.corpora.Dictionary(corpus)
+    tokenized_corpus = [tokenize(doc) for doc in corpus]
+    id2word = gensim.corpora.Dictionary(tokenized_corpus)
 
+    tokenized_corpus = [tokenize(doc) for doc in corpus]
     vectors = [
         [(token[0], 1) for token in id2word.doc2bow(doc)]
-        for doc in corpus
+        for doc in tokenized_corpus
     ]
 
     return vectors
@@ -189,10 +192,12 @@ def gensim_logical_vectorize(corpus):
 def gensim_tfidf_vectorize(corpus):
     """Реализует TF-IDF кодирование с помощью Gensum"""
 
-    corpus = [tokenize(doc) for doc in corpus]
-    lexicon = gensim.corpora.Dictionary(corpus)
+    tokenized_corpus = [tokenize(doc) for doc in corpus]
+    lexicon = gensim.corpora.Dictionary(tokenized_corpus)
     tfidf = gensim.models.TfidfModel(dictionary=lexicon, normalize=True)
-    vectors = [tfidf[lexicon.doc2bow(doc)] for doc in corpus]
+
+    tokenized_corpus = [tokenize(doc) for doc in corpus]
+    vectors = [tfidf[lexicon.doc2bow(doc)] for doc in tokenized_corpus]
 
     return vectors
 
@@ -228,6 +233,7 @@ types = {
     }
 }
 
+
 # Тестируем написанные выше методы векторизации
 for vectorizer_name, vectorizers in types.items():
     print(vectorizer_name)
@@ -240,8 +246,3 @@ for vectorizer_name, vectorizers in types.items():
         else:
             vectors = vectorizer_func(corpus)
             print_vectors(vectors)
-
-
-vectors = nltk_tfidf_vectorize(corpus)
-for vector in vectors:
-    print(vector)
