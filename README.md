@@ -14,3 +14,4 @@ List of files in order from simple to complex in terms of learning process:
 6. Estimator.py
 7. Transformer.py
 8. TextNormalizer.py
+9. GensimVectorizer.py
